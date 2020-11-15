@@ -11,28 +11,36 @@ import matplotlib.pyplot as plt
 
 from sklearn.model_selection import cross_val_score
 from sklearn.tree import DecisionTreeClassifier
+from models_base import models_base
 
-class DT:
-    def __init__(self, data_path="data/iris.csv", name="Pycharm"):
-        self.data_path = data_path
-        self.name = name
+class DT(models_base):
+    def _init_params(self):
+        params = self.params
+        try:
+            self.n_estimators = params["n_estimators"]
+        except:
+            self.n_estimators = 30
+        try:
+            self.max_depth = params["max_depth"]
+        except:
+            self.max_depth = 5
+        try:
+            self.cv = params["cv"]
+        except:
+            self.cv = 5
 
-    def read_data(self):
-        dataset = pd.read_csv(self.data_path, encoding="utf-8")
-        self.dataset = dataset
-        # return dataset
+    def _init_model(self):
+        self.model = DecisionTreeClassifier()
 
-    def split_data(self):
-        Y = self.dataset['Species']
-        X = self.dataset.iloc[:, 1:-1]
-        return X, Y
-
-    def train_and_predict(self, X, Y, data_point):
-        model = DecisionTreeClassifier()
+    def train_and_predict_online(self, X, Y, data_point):
+        model = self.model
         model.fit(X, Y)
-        scores = cross_val_score(model, X, Y, cv=5)
-        return model.predict([data_point]), scores.mean()
+        return model.predict([data_point])
 
+    def train_and_predict_cv(self, X, Y):
+        model = self.model
+        scores = cross_val_score(model, X, Y, cv=5)
+        return scores.mean()
     # Press the green button in the gutter to run the script.
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/

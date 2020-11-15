@@ -11,6 +11,8 @@ class models_base:
         self.data_path = data_path
         self.name = name
         self.params = kwargs
+        self._init_params()
+        self._init_model()
 
     def read_data(self):
         dataset = pd.read_csv(self.data_path, encoding="utf-8")

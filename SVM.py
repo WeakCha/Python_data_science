@@ -16,13 +16,31 @@ from sklearn.model_selection import cross_val_score
 
 from models_base import models_base
 class SVM(models_base):
+    def _init_params(self):
+        params = self.params
+        try:
+            self.n_estimators = params["n_estimators"]
+        except:
+            self.n_estimators = 30
+        try:
+            self.max_depth = params["max_depth"]
+        except:
+            self.max_depth = 5
+        try:
+            self.cv = params["cv"]
+        except:
+            self.cv = 5
+
+    def _init_model(self):
+        self.model = svm.SVC()
+
     def train_and_predict_online(self, X, Y, data_point):
-        model = svm.SVC()
+        model = self.model
         model.fit(X, Y)
         return model.predict([data_point])
 
     def train_and_predict_cv(self, X, Y):
-        model = svm.SVC()
+        model = self.model
         scores = cross_val_score(model, X, Y, cv=5)
         return scores.mean()
 

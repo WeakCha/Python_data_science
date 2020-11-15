@@ -12,20 +12,32 @@ class RF(models_base):
 
     def _init_params(self):
         params = self.params
-        self.n_estimators = params["n_estimators"] if params["n_estimators"] is not None else 30
-        self.max_depth = params["max_depth"] if params["max_depth"] is not None else 5
-        self.cv = params["cv"] if params["cv"] is not None else 5
+        try:
+            self.n_estimators = params["n_estimators"]
+        except:
+            self.n_estimators = 30
+        try:
+            self.max_depth = params["max_depth"]
+        except:
+            self.max_depth = 5
+        try:
+            self.cv = params["cv"]
+        except:
+            self.cv = 5
 
     def _init_model(self):
         self.model = RandomForestClassifier(n_estimators=self.n_estimators, max_depth=self.max_depth)
 
     def train_and_predict_online(self, X, Y, data_point):
         self._init_params()
+        self._init_model()
         model = self.model
         model.fit(X, Y)
         return model.predict([data_point])
 
     def train_and_predict_cv(self, X, Y):
+        self._init_params()
+        self._init_model()
         model = self.model
         scores = cross_val_score(model, X, Y, cv=5)
         return scores.mean()
